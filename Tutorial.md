@@ -32,7 +32,7 @@ Exit the root account.
 Now drop the script named `archlinux` into `/usr/local/etc/rc.d` and enable it.
 If you want, you can do it like this:
 ```
-git clone https://github.com/mtrkss/arch-compat-tutorial.git /tmp/archcompat
+git clone https://github.com/mtrkss/archcompat-tutorial.git /tmp/archcompat
 sudo cp -v /tmp/archcompat/scripts/archlinux /usr/local/etc/rc.d
 sudo chmod +x /usr/local/etc/rc.d/archlinux
 sudo service archlinux enable ; sudo service archlinux start
@@ -125,8 +125,25 @@ sudo chmod +x /compat/archlinux/opt/discord-canary/wrapper
 ```
 Then copy `example-exec` into /usr/local/bin
 ```
-sudo cp /tmp/archcompat/scripts/example-exec /usr/local/bin/discord
+sudo cp /tmp/archcompat/scripts/example-exec /usr/local/bin/discord-canary
 sudo chmod +x /usr/local/bin/discord
 ```
-Note that these scripts also work for browsers.
-If you're using the example scripts on something other than discord-canary, please modify them.
+*Note that these scripts also work for browsers.*
+*Also if you're using the example scripts on something other than discord-canary, please modify them.*
+
+Now add a .desktop entry to ~/.local/share/applications. Here's an example:
+```
+[Desktop Entry]
+StartupWMClass=discord
+Name=Discord Canary
+GenericName=Internet Messenger
+Comment=All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone.
+Icon=discord
+Type=Application
+Categories=Network;InstantMessaging;
+Exec=discord-canary %F
+```
+
+Now you *should* have a working Discord shortcut and an arch linux compat which you can use to install and run different linux apps!
+To test Discord, run it from a normal terminal logged in as your FreeBSD user and see if it starts.
+If errors appear, [troubleshoot](Troubleshoot.md) them.

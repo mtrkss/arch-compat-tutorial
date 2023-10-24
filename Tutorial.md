@@ -28,6 +28,7 @@ First enter the root account with `su`, then execute the following commands (rep
 mkdir -pv /compat/archlinux
 gtar xvpf /path/to/archlinux-bootstrap-*.tar.gz --xattrs-include='*.*' --numeric-owner --strip-components=1 -C /compat/archlinux
 ```
+Exit the root account.
 
 Now drop the script named `archlinux` into `/usr/local/etc/rc.d` and enable it.
 If you want, you can do it like this:

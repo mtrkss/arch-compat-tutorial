@@ -8,7 +8,7 @@ While installing `yay` you might get this error if you modified your pacman.conf
     <img src="images/yay-error.png?raw=true" width=695 height=140>
 </p>
 To fix it you need to add
-```
-LocalFileSigLevel = Optional
-```
+
+```LocalFileSigLevel = Optional```
+
 to your `pacman.conf`'s [options] section.

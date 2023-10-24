@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# PROVIDE: archlinux
+# REQUIRE: archdep mountlate
+# KEYWORD: nojail
+#
+# guacamole (change this from your main pc later when you're back)
+#
+. /etc/rc.subr
+
+name="archlinux"
+desc="Arch Linux chroot with Linux ABI"
+rcvar="archlinux_enable"
+start_cmd="${name}_start"
+stop_cmd=":"
+
+unmounted()
+{
+    [ `stat -f "%d" "$1"` == `stat -f "%d" "$1/.."` -a \
+      `stat -f "%i" "$1"` != `stat -f "%i" "$1/.."` ]
+}
+
+archlinux_start()
+{
+    local _emul_path _tmpdir
+
+    load_kld -e 'linux(aout|elf)' linux
+    case `sysctl -n hw.machine_arch` in
+    amd64)
+        load_kld -e 'linux64elf' linux64
+        ;;
+    esac
+    if [ -x /compat/archlinux/sbin/ldconfigDisabled ]; then
+        _tmpdir=`mktemp -d -t linux-ldconfig`
+        /compat/archlinux/sbin/ldconfig -C ${_tmpdir}/ld.so.cache
+        if ! cmp -s ${_tmpdir}/ld.so.cache /compat/archlinux/etc/ld.so.cache; then
+            cat ${_tmpdir}/ld.so.cache > /compat/archlinux/etc/ld.so.cache
+        fi
+        rm -rf ${_tmpdir}
+    fi
+
+    # Linux uses the pre-pts(4) tty naming scheme.
+    load_kld pty
+
+    # Handle unbranded ELF executables by defaulting to ELFOSABI_LINUX.
+    if [ `sysctl -ni kern.elf64.fallback_brand` -eq "-1" ]; then
+        sysctl kern.elf64.fallback_brand=3 > /dev/null
+    fi
+
+    if [ `sysctl -ni kern.elf32.fallback_brand` -eq "-1" ]; then
+        sysctl kern.elf32.fallback_brand=3 > /dev/null
+    fi
+    sysctl compat.linux.emul_path=/compat/archlinux
+
+    _emul_path="/compat/archlinux"
+    unmounted "${_emul_path}/dev" && (mount -o nocover -t devfs devfs "${_emul_path}/dev" || exit 1)
+    unmounted "${_emul_path}/dev/fd" && (mount -o nocover,linrdlnk -t fdescfs fdescfs "${_emul_path}/dev/fd" || exit 1)
+    unmounted "${_emul_path}/dev/shm" && (mount -o nocover,mode=1777 -t tmpfs tmpfs "${_emul_path}/dev/shm" || exit 1)
+    unmounted "${_emul_path}/home" && (mount -t nullfs /home "${_emul_path}/home" || exit 1)
+    unmounted "${_emul_path}/proc" && (mount -o nocover -t linprocfs linprocfs "${_emul_path}/proc" || exit 1)
+    unmounted "${_emul_path}/sys" && (mount -o nocover -t linsysfs linsysfs "${_emul_path}/sys" || exit 1)
+    unmounted "${_emul_path}/tmp" && (mount -t nullfs /tmp "${_emul_path}/tmp" || exit 1)
+    unmounted /dev/fd && (mount -o nocover -t fdescfs fdescfs /dev/fd || exit 1)
+    unmounted /proc && (mount -o nocover -t procfs procfs /proc || exit 1)
+    true
+}
+
+load_rc_config $name
+run_rc_command "$1"

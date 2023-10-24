@@ -12,3 +12,12 @@ To fix it you need to add
 ```LocalFileSigLevel = Optional```
 
 to your `pacman.conf`'s [options] section.
+
+# error: command failed to execute correctly
+Ignore this error. It's usually related to systemd or /proc so just ignore it.
+
+# Authorization required, but no authorization protocol specified
+run `xhost +` as "root" of the chroot.
+
+# "Permission Denied" when executing something
+Come on, you should know that. Just do `sudo chmod +x` on it.

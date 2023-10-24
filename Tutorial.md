@@ -93,6 +93,8 @@ pacman -Syu base-devel git wget curl sudo vim nano micro
 ```
 to install some text editors and tools for building [AUR packages](https://aur.archlinux.org/).
 
+# Installing yay
+
 Inside the chroot, create a new user with `useradd username -m`
 
 Set a password for root and the freshly created user with `passwd`
@@ -102,3 +104,29 @@ Example: `usermod -aG wheel john`
 
 `su` into the user and
 install [yay](https://github.com/Jguer/yay) using the instructions provided in their repository.
+
+# Installing Discord
+To sync/install Discord, execute `yay -S discord`. In my case I'm installing Discord Canary so I did `yay -S discord-canary`.
+
+Now drop some scripts from this repo into /opt/scripts. Outside of chroot execute 
+```
+sudo mkdir /compat/archlinux/opt/scripts ; sudo cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
+sudo cp /tmp/archcompat/scripts/wexp /compat/archlinux/opt/scripts
+```
+
+Chmod them just in case `sudo chmod -v +x /compat/archlinux/opt/scripts/*`.
+
+Now let's create a wrapper for Discord!
+
+Copy the `example-wrapper` script into your Discord directory
+```
+sudo cp /tmp/archcompat/scripts/example-wrapper /compat/archlinux/opt/discord-canary/wrapper
+sudo chmod +x /compat/archlinux/opt/discord-canary/wrapper
+```
+Then copy `example-exec` into /usr/local/bin
+```
+sudo cp /tmp/archcompat/scripts/example-exec /usr/local/bin/discord
+sudo chmod +x /usr/local/bin/discord
+```
+Note that these scripts also work for browsers.
+If you're using the example scripts on something other than discord-canary, please modify them.

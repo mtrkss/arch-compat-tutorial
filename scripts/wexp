@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# script by the chromium devs
+# script by the chromium devs, not mine,
 
 if ! which xdg-settings &> /dev/null; then
   # Old xdg utilities. Prepend $HERE to $PATH to use ours instead.

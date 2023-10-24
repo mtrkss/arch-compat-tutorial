@@ -17,9 +17,8 @@ sudo pkg inst pulseaudio dbus git coreutils
 sudo service dbus enable
 sudo service dbus start 
 ```
-If you had archlinux-pacman installed, remove it using `sudo pkg rem archlinux-pacman`
+If you had archlinux-pacman installed, remove it using `sudo pkg rem archlinux-pacman`,
 Same with archlinux-keyring.
-After that, copy the `pacman.conf` from this repo into `/usr/local/etc/pacman.conf`, [generate a mirrorlist](https://archlinux.org/mirrorlist) and drop it into `/usr/local/etc/pacman.d/mirrorlist` *(Don't forget to uncomment some mirrors!)*
 
 # Setting up the chroot (part 1)
 [download the bootstrap](https://geo.mirror.pkgbuild.com/iso/latest/archlinux-bootstrap-x86_64.tar.gz) and extract it into /compat/archlinux.
@@ -57,27 +56,46 @@ procfs              8        0         8     0%    /proc
 ```
 If the `/compat/archlinux` stuff is mounted we can continue.
 
-# Fixing pacman
+# Installing & fixing pacman
+To install pacman, execute
+```
+sudo pkg ins archlinux-keyring archlinux-pacman
+```
 
-Right now `pacman` is broken. We can fix it by executing
+Right now, stock `pacman` is broken. We can fix it by executing
 ```
 sudo pacman-key --init
 sudo pacman-key --populate
 ```
-Now update your repos with `sudo pacman -Sy` and try installing something like ksh with `sudo pacman -S ksh`
+After that, copy the `pacman.conf` from this repo into `/usr/local/etc/pacman.conf`, [generate a mirrorlist](https://archlinux.org/mirrorlist) and drop it into `/usr/local/etc/pacman.d/mirrorlist` *(Don't forget to uncomment some mirrors!)*
 
-If pacman starts screaming about PGP keys, you *may* need to run `sudo pacman --refresh-keys` 
+Now update your repos with `sudo pacman -Sy` and try installing something like tmux with `sudo pacman -S tmux`
+
+If pacman starts screaming about PGP keys, you *may* need to run `sudo pacman-key --refresh-keys` 
 
 *(keep in mind that this command takes several hours to finish)*
 
 then initialize and populate the keyring with previous `pacman-key` commands again.
 
 # Setting up the chroot (part 2)
-Execute
+Copy the modified pacman config to the chroot
+```
+sudo cp /tmp/archcompat/configs/chroot-pacman.conf /compat/archlinux/etc/pacman.conf
+```
+/tmp/archcompat is the directory in which we git cloned this repository before.
+
+Now execute
 ```
 sudo chroot /compat/archlinux /bin/bash
 source /etc/profile
 pacman-key --init ; pacman-key --populate
-pacman -Syu base-devel git wget curl vim nano micro
+pacman -Syu base-devel git wget curl sudo vim nano micro
 ```
-to install some text editors and tools for building AUR packages.
+to install some text editors and tools for building [AUR packages](https://aur.archlinux.org/).
+
+Inside the chroot, create a new user with `useradd username -m`
+
+Set a password for root and the freshly created user with `passwd`
+
+`su` into the user and
+install [yay](https://github.com/Jguer/yay) using the instructions provided in their repository.

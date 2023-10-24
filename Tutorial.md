@@ -32,7 +32,7 @@ Exit the root account.
 Now drop the script named `archlinux` into `/usr/local/etc/rc.d` and enable it.
 If you want, you can do it like this:
 ```
-git clone https://github.com/mtrkss/archcompat-tutorial.git /tmp/archcompat
+git clone https://github.com/mtrkss/arch-compat-tutorial.git /tmp/archcompat
 sudo cp -v /tmp/archcompat/scripts/archlinux /usr/local/etc/rc.d
 sudo chmod +x /usr/local/etc/rc.d/archlinux
 sudo service archlinux enable ; sudo service archlinux start

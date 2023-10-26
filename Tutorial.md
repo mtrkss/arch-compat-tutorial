@@ -84,26 +84,40 @@ sudo cp /tmp/archcompat/configs/chroot-pacman.conf /compat/archlinux/etc/pacman.
 ```
 *(/tmp/archcompat is the directory in which we `git clone`d this repository before.)*
 
-Now execute
+Also copy your mirrorlist
+```
+sudo cp /usr/local/etc/pacman.d/mirrorlist /compat/archlinux/etc/pacman.d/mirrorlist
+```
+
+Chroot into arch linux with
 ```
 sudo chroot /compat/archlinux /bin/bash
 source /etc/profile
+```
+and uncomment some locales in `/etc/locale.gen`, then execute `locale-gen` to generate them.
+Don't forget to add a UTF-8 locale to `/etc/locale.conf`.
+Also give the chroot a hostname. You can do that with `echo "Example" > /etc/hostname`.
+
+Now fix pacman here and install some text editors and tools for building [AUR packages](https://aur.archlinux.org/) using
+```
 pacman-key --init ; pacman-key --populate
 pacman -Syu base-devel git wget curl sudo vim nano micro
 ```
-to install some text editors and tools for building [AUR packages](https://aur.archlinux.org/).
+At this step you will get some errors regarding `/proc`, [systemd](https://en.wikipedia.org/wiki/Systemd) and `/etc/passwd`. Ignore them.
 
-# Installing yay
+# Installing an AUR helper
 
-Inside the chroot, create a new user with `useradd username -m`
+Inside the chroot, create a new user with `useradd -m username -s /bin/bash -G wheel,input,audio,video,games`
 
-Set a password for root and the freshly created user with `passwd`
+Set a password for root and the freshly created user with `passwd`. Example:
+```
+# passwd darius
+New password: 
+Retype new password: 
+passwd: password updated successfully
+```
 
-Add the user to the following groups: `wheel, video, audio, input, games` by using `usermod`.
-Example: `usermod -aG wheel john`
-
-`su` into the user and
-install [yay](https://github.com/Jguer/yay) using the instructions provided in their repository.
+`su` into the user and install [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru) using the instructions provided in their repository.
 
 # Installing Discord
 To sync/install Discord, execute `yay -S discord`. In my case I'm installing Discord Canary so I did `yay -S discord-canary`.

@@ -95,7 +95,9 @@ sudo chroot /compat/archlinux /bin/bash
 source /etc/profile
 ```
 and uncomment some locales in `/etc/locale.gen`, then execute `locale-gen` to generate them.
-Don't forget to add a UTF-8 locale to `/etc/locale.conf`.
+
+*Don't forget to add a UTF-8 locale to `/etc/locale.conf`!*
+
 Also give the chroot a hostname. You can do that with `echo "Example" > /etc/hostname`.
 
 Now fix pacman here and install some text editors and tools for building [AUR packages](https://aur.archlinux.org/) using

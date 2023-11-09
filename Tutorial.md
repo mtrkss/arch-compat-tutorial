@@ -78,25 +78,25 @@ If pacman starts screaming about PGP keys, you *may* need to run `sudo pacman-ke
 then initialize and populate the keyring with previous `pacman-key` commands again.
 
 # Setting up the chroot (part 2)
-Copy the modified pacman config to the chroot
+Copy the modified pacman config and your mirrorlist to the chroot.
 ```
 sudo cp /tmp/archcompat/configs/chroot-pacman.conf /compat/archlinux/etc/pacman.conf
+sudo cp /usr/local/etc/pacman.d/mirrorlist /compat/archlinux/etc/pacman.d/mirrorlist
 ```
 *(/tmp/archcompat is the directory in which we `git clone`d this repository before.)*
 
-Also copy your mirrorlist
+Uncomment an english locale in `/compat/archlinux/etc/locale.gen` _(preferably `en_US.UTF-8 UTF-8` ***and*** `en_US.ISO-8859-1`)_ and also add the following nameservers to `/compat/archlinux/etc/resolv.conf`:
 ```
-sudo cp /usr/local/etc/pacman.d/mirrorlist /compat/archlinux/etc/pacman.d/mirrorlist
+nameserver 8.8.8.8
+nameserver 8.8.4.4
 ```
 
-Chroot into arch linux with
+Chroot into Arch Linux with:
 ```
 sudo chroot /compat/archlinux /bin/bash
 source /etc/profile
 ```
-and uncomment some locales in `/etc/locale.gen`, then execute `locale-gen` to generate them.
-
-*Don't forget to add a UTF-8 locale to `/etc/locale.conf`!*
+Execute `locale-gen` to generate the locales, then add a UTF-8 locale to `/etc/locale.conf` *(you don't have a text editor right now so use `echo "LANG=en_US.UTF-8" > /etc/locale.conf`)*.
 
 Also give the chroot a hostname. You can do that with `echo "Example" > /etc/hostname`.
 

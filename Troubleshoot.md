@@ -32,3 +32,10 @@ pacman -Syu
 Also try installing different packages or installing the particular one that fails outside/inside of the chroot.
 
 Arch Linux keyring is a mess.
+
+# No internet
+Add the following to `/etc/resolv.conf` in the chroot:
+```
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+```

@@ -146,7 +146,7 @@ sudo cp /tmp/archcompat/scripts/example-exec /usr/local/bin/discord-canary
 sudo chmod +x /usr/local/bin/discord-canary
 ```
 *Note that these scripts also work for browsers.*
-*Also if you're using the example scripts on something other than discord-canary, please modify them.*
+*If you're using the example scripts on something other than discord-canary, please modify them.*
 
 Now add a .desktop entry to ~/.local/share/applications. Here's an example:
 ```

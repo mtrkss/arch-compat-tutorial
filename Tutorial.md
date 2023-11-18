@@ -128,6 +128,7 @@ Now drop some scripts from this repo into /opt/scripts. Outside of chroot execut
 ```
 sudo mkdir /compat/archlinux/opt/scripts ; sudo cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
 sudo cp /tmp/archcompat/scripts/wexp /compat/archlinux/opt/scripts
+sudo cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
 ```
 
 Chmod them just in case `sudo chmod -v +x /compat/archlinux/opt/scripts/*`.
@@ -142,7 +143,7 @@ sudo chmod +x /compat/archlinux/opt/discord-canary/wrapper
 Then copy `example-exec` into /usr/local/bin
 ```
 sudo cp /tmp/archcompat/scripts/example-exec /usr/local/bin/discord-canary
-sudo chmod +x /usr/local/bin/discord
+sudo chmod +x /usr/local/bin/discord-canary
 ```
 *Note that these scripts also work for browsers.*
 *Also if you're using the example scripts on something other than discord-canary, please modify them.*

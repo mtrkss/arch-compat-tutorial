@@ -4,7 +4,7 @@
 # REQUIRE: archdep mountlate
 # KEYWORD: nojail
 #
-# guacamole (change this from your main pc later when you're back)
+# script based on ubuntu compat from https://forums.freebsd.org/threads/linuxulator-how-to-install-brave-linux-app-on-freebsd-13-0.78879/
 #
 . /etc/rc.subr
 

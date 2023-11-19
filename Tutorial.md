@@ -100,10 +100,10 @@ Execute `locale-gen` to generate the locales, then add a UTF-8 locale to `/etc/l
 
 Also give the chroot a hostname. You can do that with `echo "Example" > /etc/hostname`.
 
-Now fix pacman here and install some text editors and tools for building [AUR packages](https://aur.archlinux.org/) using
+Now fix pacman here and install some text editors, tools for building [AUR packages](https://aur.archlinux.org/) and pulseaudio using
 ```
 pacman-key --init ; pacman-key --populate
-pacman -Syu base-devel git wget curl sudo vim nano micro
+pacman -Syu base-devel git wget curl sudo vim nano micro pulseaudio
 ```
 At this step you will get some errors regarding `/proc`, [systemd](https://en.wikipedia.org/wiki/Systemd) and `/etc/passwd`. Ignore them.
 

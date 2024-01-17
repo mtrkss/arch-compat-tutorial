@@ -5,37 +5,42 @@ All of this has been tested on:
 - FreeBSD 14.0-BETA4
 - FreeBSD 14.0-RC1
 - FreeBSD 14.0-RC2
+- FreeBSD 14.0
+- FreeBSD 14.0-p3
+- FreeBSD 14.0-p4
+- FreeBSD 15-CURRENT
 
-The least problematic one appears to be `FreeBSD 14.0-RC2`.
+
+
 # So, Where to start?
 
-Before following the tutorial I recommend checking your package integrity with `sudo pkg check --checksums --all` and if something corrupt was found, manually remove and reinstall that package.
+Before following the tutorial I recommend checking your package integrity with `pkg check --checksums --all` and if something corrupt was found, manually remove and reinstall that package.
 
 Then execute these commands to install the needed stuff:
 ```
-sudo pkg inst pulseaudio dbus git coreutils
-sudo service dbus enable
-sudo service dbus start 
+pkg inst pulseaudio dbus git gtar
+service dbus enable
+service dbus start
 ```
-If you had archlinux-pacman installed, remove it using `sudo pkg rem archlinux-pacman`,
-same with archlinux-keyring.
+If you had archlinux-pacman installed, remove it using `pkg rem archlinux-pacman`.
+
+----
 
 # Setting up the chroot (part 1)
 [download the bootstrap](https://geo.mirror.pkgbuild.com/iso/latest/archlinux-bootstrap-x86_64.tar.gz) and extract it into /compat/archlinux.
-First enter the root account with `su`, then execute the following commands (replace /path/to with the actual path):
+First execute the following commands (replace /path/to with the actual path):
 ```
 mkdir -pv /compat/archlinux
-gtar xvpf /path/to/archlinux-bootstrap-*.tar.gz --xattrs-include='*.*' --numeric-owner --strip-components=1 -C /compat/archlinux
+gtar xvp --numeric-owner --strip-components=1 -f /path/to/archlinux-bootstrap-*.tar.gz -C /compat/archlinux
 ```
-Exit the root account.
 
 Now drop the script named `archlinux` into `/usr/local/etc/rc.d` and enable it.
 If you want, you can do it like this:
 ```
 git clone https://github.com/mtrkss/archcompat-tutorial.git /tmp/archcompat
-sudo cp -v /tmp/archcompat/scripts/archlinux /usr/local/etc/rc.d
-sudo chmod +x /usr/local/etc/rc.d/archlinux
-sudo service archlinux enable ; sudo service archlinux start
+cp -v /tmp/archcompat/scripts/archlinux /usr/local/etc/rc.d
+chmod +x /usr/local/etc/rc.d/archlinux
+service archlinux enable && service archlinux start
 ```
 Check if the filesystems are mounted with `df`.
 The output should look like this:
@@ -54,113 +59,105 @@ linsysfs            8        0         8     0%    /compat/archlinux/sys
 fdescfs             1        0         1     0%    /dev/fd
 procfs              8        0         8     0%    /proc
 ```
-If the `/compat/archlinux` stuff is mounted we can continue.
+If the `/compat/archlinux` directories are mounted, we can continue.
 
-# Installing & fixing pacman
-To install pacman, execute
+# Installing and fixing pacman
+> Be aware that the FreeBSD side pacman is janky, I only recommend using it for installing and removing small packages.
+To install pacman, run
 ```
-sudo pkg ins archlinux-keyring archlinux-pacman
+pkg ins archlinux-keyring archlinux-pacman
 ```
 
-Right now, stock `pacman` is broken. We can fix it by executing
-```
-sudo pacman-key --init
-sudo pacman-key --populate
-```
-After that, copy the `pacman.conf` from this repo into `/usr/local/etc/pacman.conf`, [generate a mirrorlist](https://archlinux.org/mirrorlist) and drop it into `/usr/local/etc/pacman.d/mirrorlist` *(Don't forget to uncomment some mirrors!)*
+After installing pacman, run `pacman-key --init && pacman-key --populate`
 
-Now update your repos with `sudo pacman -Sy` and try installing something like tmux with `sudo pacman -S tmux`
+After that, copy `pacman.conf` from this repo into `/usr/local/etc/pacman.conf`, [generate a mirrorlist](https://archlinux.org/mirrorlist) and drop it into `/usr/local/etc/pacman.d/mirrorlist`
 
-If pacman starts screaming about PGP keys, you *may* need to run `sudo pacman-key --refresh-keys` 
+Now update your repos with `pacman -Sy` and try installing something like tmux with `pacman -S tmux`
 
+If pacman starts screaming about PGP keys, you *may* need to run `pacman-key --refresh-keys`
 *(keep in mind that this command takes several hours to finish)*
 
 then initialize and populate the keyring with previous `pacman-key` commands again.
 
-# Setting up the chroot (part 2)
-Copy the modified pacman config and your mirrorlist to the chroot.
+## Setting up the chroot (part 2)
+Configure the chroot
 ```
-sudo cp /tmp/archcompat/configs/chroot-pacman.conf /compat/archlinux/etc/pacman.conf
-sudo cp /usr/local/etc/pacman.d/mirrorlist /compat/archlinux/etc/pacman.d/mirrorlist
-```
-*(/tmp/archcompat is the directory in which we `git clone`d this repository before.)*
-
-Uncomment an english locale in `/compat/archlinux/etc/locale.gen` _(preferably `en_US.UTF-8 UTF-8` ***and*** `en_US.ISO-8859-1`)_ and also add the following nameservers to `/compat/archlinux/etc/resolv.conf`:
-```
-nameserver 8.8.8.8
-nameserver 8.8.4.4
+export arch="/compat/archlinux"
+cp /tmp/archcompat/configs/chroot-pacman.conf $arch/etc/pacman.conf
+cp /usr/local/etc/pacman.d/mirrorlist $arch/etc/pacman.d/mirrorlist
+echo $(hostname) > $arch/etc/hostname
+echo "en_US.UTF-8 UTF-8" >> $arch/etc/locale.gen
+echo "LANG=en_US.UTF-8" > $arch/etc/locale.conf
+printf "nameserver 1.1.1.1\nnameserver 1.0.0.1\n" > $arch/etc/resolv.conf
 ```
 
-Chroot into Arch Linux with:
+Chroot into Arch Linux with
 ```
-sudo chroot /compat/archlinux /bin/bash
+chroot /compat/archlinux /bin/bash
 source /etc/profile
 ```
-Execute `locale-gen` to generate the locales, then add a UTF-8 locale to `/etc/locale.conf` *(you don't have a text editor right now so use `echo "LANG=en_US.UTF-8" > /etc/locale.conf`)*.
-
-Also give the chroot a hostname. You can do that with `echo "Example" > /etc/hostname`.
+Run `locale-gen`.
 
 Now fix pacman here and install some text editors, tools for building [AUR packages](https://aur.archlinux.org/) and pulseaudio using
 ```
-pacman-key --init ; pacman-key --populate
-pacman -Syu base-devel git wget curl sudo vim nano micro pulseaudio
+pacman-key --init && pacman-key --populate
+pacman -Syu base-devel git sudo vim nano ed pulseaudio alsa-libs
 ```
-At this step you will get some errors regarding `/proc`, [systemd](https://en.wikipedia.org/wiki/Systemd) and `/etc/passwd`. Ignore them.
+At this step you'll get some errors regarding `/proc`, systemd and `/etc/passwd`. Ignore them.
+
+The chroot is done now, it's time to install something cool!
+
+------
 
 # Installing an AUR helper
+Inside the chroot, create a new user with `useradd username -m -s /bin/bash -G wheel,input,audio,video,games`
 
-Inside the chroot, create a new user with `useradd -m username -s /bin/bash -G wheel,input,audio,video,games`
-
-Set a password for root and the freshly created user with `passwd`. Example:
-```
-# passwd darius
-New password: 
-Retype new password: 
-passwd: password updated successfully
-```
+Set a password for root and the freshly created user with `passwd`.
 
 `su` into the user and install [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru) using the instructions provided in their repository.
 
 # Installing Discord
-To sync/install Discord, execute `yay -S discord`. In my case I'm installing Discord Canary so I did `yay -S discord-canary`.
+To sync/install Discord, run `yay -S discord`. (or `paru -S discord`)
 
 Now drop some scripts from this repo into /opt/scripts. Outside of chroot execute 
 ```
-sudo mkdir /compat/archlinux/opt/scripts ; sudo cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
-sudo cp /tmp/archcompat/scripts/wexp /compat/archlinux/opt/scripts
-sudo cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
+mkdir /compat/archlinux/opt/scripts && cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
+cp /tmp/archcompat/scripts/wexp /compat/archlinux/opt/scripts
+cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
 ```
 
-Chmod them just in case `sudo chmod -v +x /compat/archlinux/opt/scripts/*`.
+Chmod them just in case: `chmod -v +x /compat/archlinux/opt/scripts/*`.
 
-Now let's create a wrapper for Discord!
+Now let's set up Discord!
 
 Copy the `example-wrapper` script into your Discord directory
 ```
-sudo cp /tmp/archcompat/scripts/example-wrapper /compat/archlinux/opt/discord-canary/wrapper
-sudo chmod +x /compat/archlinux/opt/discord-canary/wrapper
+cp /tmp/archcompat/scripts/example-wrapper /compat/archlinux/opt/discord/wrapper
+chmod +x /compat/archlinux/opt/discord/wrapper
 ```
 Then copy `example-exec` into /usr/local/bin
 ```
-sudo cp /tmp/archcompat/scripts/example-exec /usr/local/bin/discord-canary
-sudo chmod +x /usr/local/bin/discord-canary
+cp /tmp/archcompat/scripts/example-exec /usr/local/bin/discord
+chmod +x /usr/local/bin/discord
 ```
 *Note that these scripts also work for browsers.*
-*If you're using the example scripts on something other than discord-canary, please modify them.*
+*If you're using the example scripts on something other than discord, just modify them.*
 
 Now add a .desktop entry to ~/.local/share/applications. Here's an example:
 ```
 [Desktop Entry]
 StartupWMClass=discord
-Name=Discord Canary
+Name=Discord
 GenericName=Internet Messenger
 Comment=All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone.
 Icon=discord
 Type=Application
 Categories=Network;InstantMessaging;
-Exec=discord-canary %F
+Exec=discord %F
 ```
 
-Now you *should* have a working Discord shortcut and an arch linux compat which you can use to install and run different linux apps!
-To test Discord, run it from a normal terminal logged in as your FreeBSD user and see if it starts.
+Now you *should* have a working Discord shortcut and an Arch Linux(ulator) which you can use to install and run different linux apps!
+
+To test Discord, just run `discord`.
+
 If errors appear, [troubleshoot](Troubleshoot.md) them.

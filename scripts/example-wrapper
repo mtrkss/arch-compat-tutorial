@@ -10,4 +10,4 @@ exec < /dev/null
 exec > >(exec cat)
 exec 2> >(exec cat >&2)
 
-"$HERE/DiscordCanary" --no-sandbox --test-type --disable-dev-shm-usage --v=0 "$@" || true
+"$HERE/Discord" --no-sandbox --test-type --disable-dev-shm-usage --v=0 "$@" || true

@@ -1,8 +1,6 @@
 # Errors & Troubleshooting
 
-**Here are some errors and how to fix them.** 
-
-# yay - package missing required signature
+## yay - package missing required signature
 While installing `yay` you might get this error if you modified your pacman.conf:
 <p align=center>
     <img src="images/yay-error.png?raw=true" width=695 height=140>
@@ -13,16 +11,16 @@ To fix it you need to add
 
 to your `pacman.conf`'s [options] section.
 
-# error: command failed to execute correctly
+## error: command failed to execute correctly
 Ignore this error. It's usually related to systemd or /proc so just ignore it.
 
-# Authorization required, but no authorization protocol specified
-run `xhost +` as "root" of the chroot.
+## Authorization required, but no authorization protocol specified
+run `xhost +` as your FreeBSD user + the chroots root user.
 
-# "Permission Denied" when executing something
-Come on, you should know that. Just do `sudo chmod +x` on the file.
+## "Permission Denied" when executing something
+Come on, you should know that. Just do `chmod +x` on the file.
 
-# Random PGP nonesense
+## Random PGP/GPG/WTF nonesense
 First of all do
 ```
 pacman-key --init
@@ -33,9 +31,11 @@ Also try installing different packages or installing the particular one that fai
 
 Arch Linux keyring is a mess.
 
-# No internet
+## No internet
 Add the following to `/etc/resolv.conf` in the chroot:
 ```
-nameserver 8.8.8.8
-nameserver 8.8.4.4
+nameserver 1.1.1.1
+nameserver 1.0.0.1
 ```
+
+If this doesn't work then try different DNS resolvers like `9.9.9.9` (Quad9) or `8.8.8.8` (Google)

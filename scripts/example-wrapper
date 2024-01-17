@@ -2,7 +2,7 @@
 
 # Modified Brave browser wrapper, originally made for the CentOS compat by the chromium devs.
 
-HERE="/opt/discord-canary"
+HERE="/opt/discord"
 
 . /opt/scripts/wexp
 

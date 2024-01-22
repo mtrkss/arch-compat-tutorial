@@ -101,7 +101,7 @@ Run `locale-gen`.
 Now fix pacman here and install some text editors, tools for building [AUR packages](https://aur.archlinux.org/) and pulseaudio using
 ```
 pacman-key --init && pacman-key --populate
-pacman -Syu base-devel git sudo vim nano ed pulseaudio alsa-libs
+pacman -Syu base-devel git sudo vim nano ed pulseaudio alsa-lib
 ```
 At this step you'll get some errors regarding `/proc`, systemd and `/etc/passwd`. Ignore them.
 

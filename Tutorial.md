@@ -10,19 +10,17 @@ All of this has been tested on:
 - FreeBSD 14.0-p4
 - FreeBSD 15-CURRENT
 
-
-
 # So, Where to start?
 
 Before following the tutorial I recommend checking your package integrity with `pkg check --checksums --all` and if something corrupt was found, manually remove and reinstall that package.
 
-Then execute these commands to install the needed stuff:
+Then execute these commands to install the needed packages
 ```
-pkg inst pulseaudio dbus git gtar
+pkg ins pulseaudio dbus git gtar
 service dbus enable
 service dbus start
 ```
-If you had archlinux-pacman installed, remove it using `pkg rem archlinux-pacman`.
+If you had archlinux-pacman installed, remove it using `pkg rem archlinux-pacman` and clean up `/compat/archlinux`
 
 ----
 
@@ -38,7 +36,7 @@ Now drop the script named `archlinux` into `/usr/local/etc/rc.d` and enable it.
 If you want, you can do it like this:
 ```
 git clone https://github.com/mtrkss/archcompat-tutorial.git /tmp/archcompat
-cp -v /tmp/archcompat/scripts/archlinux /usr/local/etc/rc.d
+cp -v /tmp/archcompat/scripts/archlinux /usr/local/etc/rc.d/
 chmod +x /usr/local/etc/rc.d/archlinux
 service archlinux enable && service archlinux start
 ```
@@ -77,8 +75,6 @@ Now update your repos with `pacman -Sy` and try installing something like tmux w
 If pacman starts screaming about PGP keys, you *may* need to run `pacman-key --refresh-keys`
 *(keep in mind that this command takes several hours to finish)*
 
-then initialize and populate the keyring with previous `pacman-key` commands again.
-
 ## Setting up the chroot (part 2)
 Configure the chroot
 ```
@@ -110,23 +106,22 @@ The chroot is done now, it's time to install something cool!
 ------
 
 # Installing an AUR helper
-Inside the chroot, create a new user with `useradd username -m -s /bin/bash -G wheel,input,audio,video,games`
+Inside the chroot, create a new user with the same name and UID as your FreeBSD user using `useradd $name -u $uid -m -s /bin/bash -G wheel,input,audio,video,games` (replace $uid and $name with the appropriate strings)
 
-Set a password for root and the freshly created user with `passwd`.
+Set a password for root and the freshly created user with `passwd` and add the user to `/etc/sudoers`.
 
 `su` into the user and install [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru) using the instructions provided in their repository.
 
 # Installing Discord
 To sync/install Discord, run `yay -S discord`. (or `paru -S discord`)
 
-Now drop some scripts from this repo into /opt/scripts. Outside of chroot execute 
+Now drop the scripts from this repo into /opt/scripts.
 ```
-mkdir /compat/archlinux/opt/scripts && cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
-cp /tmp/archcompat/scripts/wexp /compat/archlinux/opt/scripts
-cp /tmp/archcompat/scripts/paw /compat/archlinux/opt/scripts
+mkdir /opt/scripts
+cp /tmp/archcompat/scripts/* /opt/scripts/
 ```
 
-Chmod them just in case: `chmod -v +x /compat/archlinux/opt/scripts/*`.
+Chmod them just in case `chmod -v +x /opt/scripts/*`.
 
 Now let's set up Discord!
 

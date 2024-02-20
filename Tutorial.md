@@ -16,7 +16,7 @@ Before following the tutorial I recommend checking your package integrity with `
 
 Then execute these commands to install the needed packages
 ```
-pkg ins pulseaudio dbus git gtar
+pkg ins pulseaudio dbus git gtar alsa-lib
 service dbus enable
 service dbus start
 ```
@@ -61,12 +61,13 @@ If the `/compat/archlinux` directories are mounted, we can continue.
 
 # Installing and fixing pacman
 > Be aware that the FreeBSD side pacman is janky, I only recommend using it for installing and removing small packages.
+
 To install pacman, run
 ```
 pkg ins archlinux-keyring archlinux-pacman
 ```
 
-After installing pacman, run `pacman-key --init && pacman-key --populate`
+After installing pacman, run `pacman-key --init && pacman-key --populate` as a safety precaution
 
 After that, copy `pacman.conf` from this repo into `/usr/local/etc/pacman.conf`, [generate a mirrorlist](https://archlinux.org/mirrorlist) and drop it into `/usr/local/etc/pacman.d/mirrorlist`
 
@@ -145,7 +146,7 @@ StartupWMClass=discord
 Name=Discord
 GenericName=Internet Messenger
 Comment=All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone.
-Icon=discord
+Icon=/opt/Discord/discord.png
 Type=Application
 Categories=Network;InstantMessaging;
 Exec=discord %F
@@ -154,5 +155,3 @@ Exec=discord %F
 Now you *should* have a working Discord shortcut and an Arch Linux(ulator) which you can use to install and run different linux apps!
 
 To test Discord, just run `discord`.
-
-If errors appear, [troubleshoot](Troubleshoot.md) them.

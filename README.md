@@ -1,6 +1,6 @@
 # Arch Linux Compat on FreeBSD
 
-## THIS METHOD IS DEPRECATED BECAUSE OF SYSTEMD COMPATIBILITY, USE [THIS](https://github.com/mtrkss/artix-compat-tutor) INSTEAD
+## THIS METHOD IS DEPRECATED BECAUSE OF SYSTEMD DEPENDENCIES, USE [THIS](https://github.com/mtrkss/artix-compat-tutor) INSTEAD
 
 This tutorial is about setting up the Arch Linux compat layer/Linuxulator for FreeBSD with working AUR and Discord.
 Don't expect anything special, just a working tutorial.
